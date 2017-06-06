@@ -57,6 +57,8 @@ BOOL COSVersionDlg::OnInitDialog()
 		SetDlgItemText(IDC_EDIT7,infoW.wszSerialNumber);
 		SetDlgItemText(IDC_EDIT8,infoW.wszEnClosureType);
 		SetDlgItemText(IDC_EDIT9,infoW.wszOSVersion);
+		SetDlgItemText(IDC_EDIT10,infoW.wszOEMTID);
+		SetDlgItemText(IDC_EDIT11,infoW.wszOEMID);
 	}
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
@@ -107,15 +109,26 @@ int COSVersionDlg::GetSMBIOSInfo(SMInfoW* lpInfoW)
 		return -1;
 	}
 
-	DWORD iSignature='RSMB';
-	//DWORD iSignature='ACPI';
-	DWORD iSigId = 0;//'TDSX';//PCAF,TDSR,TDSX,PDSR,TDSD
+	DWORD iSignature='ACPI';
+	DWORD iSigId = 'TDSX';//PCAF,TDSR,TDSX,PDSR,TDSD
 	RawSMBIOSData *pData;
 	SMInfo info={0};
 	int length;
 	char* szTemp=NULL;
 	char buff[4096]={0};
 	int iBuffersize = GetSystemFirmwareTable(iSignature,iSigId,0,0);
+	if (iBuffersize <= 0)
+	{
+		return 0;
+	}
+	GetSystemFirmwareTable(iSignature,iSigId,buff,iBuffersize);
+	memcpy(info.szOEMID,buff+10,6);
+	memcpy(info.szOEMTID,buff+16,8);
+	//------------------------------------------------------
+	iSignature='RSMB';
+	iSigId = 0;//'TDSX';//PCAF,TDSR,TDSX,PDSR,TDSD
+	memset(buff,0,4096);
+	iBuffersize = GetSystemFirmwareTable(iSignature,iSigId,0,0);
 	if (iBuffersize <= 0)
 	{
 		return 0;
@@ -224,6 +237,8 @@ int COSVersionDlg::GetSMBIOSInfo(SMInfoW* lpInfoW)
 	mbstowcs(lpInfoW->wszSkuNumber,info.szSkuNumber,255);
 	mbstowcs(lpInfoW->wszFamily,info.szFamily,255);
 	mbstowcs(lpInfoW->wszOSVersion,info.szOSVersion,255);
+	mbstowcs(lpInfoW->wszOEMID,info.szOEMID,255);
+	mbstowcs(lpInfoW->wszOEMTID,info.szOEMTID,255);
 	switch(info.nEnClosureType)
 	{
 	case 3:

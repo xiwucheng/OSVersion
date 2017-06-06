@@ -33,7 +33,8 @@ typedef struct
 	char szFamily[255];
 	char nEnClosureType;
 	char szOSVersion[255];
-
+	char szOEMTID[255];
+	char szOEMID[255];
 }SMInfo;
 typedef struct
 {
@@ -49,6 +50,8 @@ typedef struct
 	wchar_t wszFamily[255];
 	wchar_t wszEnClosureType[255];
 	wchar_t wszOSVersion[255];
+	wchar_t wszOEMTID[255];
+	wchar_t wszOEMID[255];
 
 }SMInfoW;
 // COSVersionApp:
